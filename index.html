@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Race Display</title>
+    <link rel="stylesheet" href="mattington.css">
+</head>
+<body>
+
+    <main>
+
+        <!-- These are the only view I should use -->
+        <div id="home-view" class="view.active">
+            <h2>My F1 Dashboard</h2>
+            <label for="season-select">Select Season:</label>
+            <select id="season-select">
+                <option value="">--Choose a Season--</option>
+                <!-- Populate with seasons here -->
+            </select>
+            <button id="go-to-races">View Races</button>
+        </div>
+
+        <div id="races-view" class="view.active">
+            <h1>Races</h1>
+            <ul id="race-list">
+                <!-- Here the raceList items will be added -->
+            </ul>
+            <label for="race-select">Select Race:</label>
+            <select id="race-select" disabled>
+                <option value="">--Choose a Race--</option>
+                <!-- Populate with races here -->
+            </select>
+            <button id="back-to-home">Back to Home</button>
+        </div>
+
+        <!-- Qualifying Results Section -->
+        <section id="qualifying-section">
+            <h2>Qualifying Results</h2>
+            <h3 id="selectedRaceName">
+
+            </h3>
+            <ul id="qualifying-list">
+                <!-- Qualifying results will be added here dynamically -->
+            </ul>
+        </section>
+        <!-- Race Results Section -->
+        <!-- <section id="race-results-section">
+            <h2>Race Results</h2>
+            <ul id="race-results-list">
+                Race results will be added here dynamically
+            </ul>
+        </section> -->
+        <!-- Race Results Section v2-->
+        <section id="race-results-section">
+            <h2>Race Results</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position </th>
+                        <th>Driver</th>
+                        <th>Constructor </th>
+                        <th>Laps </th>
+                        <th>Points </th>
+                    </tr>
+                </thead>
+                <tbody id="race-results-table">
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Pop up modals -->
+        <dialog id="driver-popup">
+            <h2>Driver Details</h2>
+            <table id="driver-details-table">
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows with driver info will be added dynamically -->
+                </tbody>
+            </table>
+            <button id="close-driver-popup">Close</button>
+        </dialog>
+
+        <dialog id="constructor-popup">
+            <h2>Constructor Details</h2>
+            <p id="constructor-info">Loading...</p>
+            <button id="close-constructor-popup">Close</button>
+        </dialog>
+        
+        <dialog id="circuit-popup">
+            <h2>Circuit Details</h2>
+            <p id="circuit-info">Loading...</p>
+            <button id="close-circuit-popup">Close</button>
+        </dialog>
+        
+        <section id="favorites" class="hidden">
+            <h2>Your Favorites</h2>
+            <ul id="favorites-list">
+                <!-- if we have time in the end -->
+            </ul>
+        </section>
+        
+
+
+
+
+
+    </main>
+    <script src="coding.js"></script>
+
+</body>
+</html>
