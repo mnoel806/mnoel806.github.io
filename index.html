@@ -11,7 +11,7 @@
 
     <main>
 
-        <!-- These are the only view I should use -->
+        <!-- These are the only views I should use -->
         <div id="home-view" class="view.active">
             <h2>My F1 Dashboard</h2>
             <label for="season-select">Select Season:</label>
@@ -35,22 +35,23 @@
             <button id="back-to-home">Back to Home</button>
         </div>
 
-        <!-- Qualifying Results Section -->
+        <!-- Qualifying Results Box -->
         <section id="qualifying-section">
             <h2>Qualifying Results</h2>
             <h3 id="selectedRaceName">
 
             </h3>
             <ul id="qualifying-list">
-                <!-- Qualifying results will be added here dynamically -->
+                <!-- Qualifying results will be added here -->
             </ul>
         </section>
         <!-- Race Results Section -->
         <!-- <section id="race-results-section">
             <h2>Race Results</h2>
             <ul id="race-results-list">
-                Race results will be added here dynamically
+                Race results will be added here
             </ul>
+
         </section> -->
         <!-- Race Results Section v2-->
         <section id="race-results-section">
@@ -66,23 +67,24 @@
                     </tr>
                 </thead>
                 <tbody id="race-results-table">
-                    <!-- Rows will be dynamically added here -->
+                    <!-- Rows will be added here -->
                 </tbody>
             </table>
         </section>
 
-        <!-- Pop up modals -->
+
+        <!-- There asre my pop up modals -->
         <dialog id="driver-popup">
             <h2>Driver Details</h2>
             <table id="driver-details-table">
                 <thead>
                     <tr>
-                        <th>Attribute</th>
-                        <th>Value</th>
+                        <th>Name</th>
+                        <th>Age</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Rows with driver info will be added dynamically -->
+                    <!-- Rows will be added for the Driver here -->
                 </tbody>
             </table>
             <button id="close-driver-popup">Close</button>
@@ -100,7 +102,8 @@
             <button id="close-circuit-popup">Close</button>
         </dialog>
         
-        <section id="favorites" class="hidden">
+
+        <section id="favorites" >
             <h2>Your Favorites</h2>
             <ul id="favorites-list">
                 <!-- if we have time in the end -->

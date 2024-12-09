@@ -2,12 +2,14 @@ document.addEventListener("DOMContentLoaded",  () => {
     // All the code to go here
 
     const seasons = [2020, 2021, 2022, 2023];
-    // const urlResults = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php`;
+    
     
     // const urlCircuits = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/circuits.php`;
     // const urlConstructors = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/constructors.php`;
     // const urlDrivers = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php`;
     
+    // I really only need these
+    // const urlResults = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/results.php`;
     // const urlQualify = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/qualifying.php`;
     // const urlRaces = `https://www.randyconnolly.com/funwebdev/3rd/api/f1/races.php`; 
 
@@ -19,12 +21,12 @@ document.addEventListener("DOMContentLoaded",  () => {
     // populateRaces(races);
 
     document.querySelector("#season-select").addEventListener('change', async (e) => {
-        const selectedSeason = e.target.value;
+        const selSeason = e.target.value;
     
-        if (selectedSeason) {
-            console.log(`Selected season: ${selectedSeason}`);
+        if (selSeason) {
+            console.log(`Selected season: ${selSeason}`);
 
-            const races = await fetchRaceData(selectedSeason);
+            const races = await fetchRaceData(selSeason);
             // You can now fetch race data for the selected season or update the view
             populateRaces(races);
         } else {
@@ -34,13 +36,13 @@ document.addEventListener("DOMContentLoaded",  () => {
 
     // This section is to handle race selection change
     document.querySelector('#race-select').addEventListener('change', async (event) => {
-        const selectedRaceId = event.target.value;
+        const selRaceId = event.target.value;
 
-        if (selectedRaceId) {
-            console.log(`Fetching details for race ID: ${selectedRaceId}`);
+        if (selRaceId) {
+            console.log(`Fetching details for race ID: ${selRaceId}`);
             
             // Fetch the race details (qualifying and results)
-            const raceDetails = await fetchRaceDetails(selectedRaceId);
+            const raceDetails = await fetchRaceDetails(selRaceId);
 
             // Display the race details
             displayRaceDetails(raceDetails);
@@ -52,6 +54,7 @@ document.addEventListener("DOMContentLoaded",  () => {
 
 
 //Fucntions called AFTER DOM stuff
+//They should get used in order 
 function populateSeasons(seasons) {
     const seasonSelect = document.querySelector('#season-select');
 
@@ -63,12 +66,13 @@ function populateSeasons(seasons) {
         opt.textContent = season;
         seasonSelect.appendChild(opt);
     });
+    // console.dir(seasonSelect);
 }
 
 //this checks it see if data in LS, then uses LS, or fetches from API then saves to LS
 async function fetchRaceData(season){
     const storedData = localStorage.getItem(`races_${season}`);
-
+// console.dir(storedData);
     if (storedData) {
         console.log(`Using the data cache for season ${season}`);
         return JSON.parse(storedData); //here be a list of races
@@ -85,13 +89,14 @@ async function fetchRaceData(season){
     }
 }
 
+
 async function populateRaces(races) {
     const raceSelect = document.querySelector("#race-select");
 
-    //then display the data
+    // unhide and clear old info
     raceSelect.disabled = false;
-    raceSelect.innerHTML = '<option value="">--Choose a Race--</option>';
-
+    raceSelect.textContent = '<option value="">--Choose a Race--</option>';
+    //then display the data
     races.forEach((race) => {
         const option = document.createElement('option');
         option.value = race.id;
@@ -139,7 +144,7 @@ function displayRaceDetails(raceDetails) {
 
         raceDetails.raceResults.forEach(r => {
             const row = document.createElement('tr');
-            // when click on driver name, open driver modal and display that driver's details
+            //This make it so when click on driver name, open driver modal, and display that driver's details
             row.innerHTML = `
                 <td>${r.position}</td>
                 <td>${r.driver.forename} ${r.driver.surname}</td>
@@ -157,8 +162,16 @@ function displayRaceDetails(raceDetails) {
     }
 }
 
+//Making the Modals Work
+
+// `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php
 
 
+
+
+
+// All the other attempts and code and what not,
+//  It was better to pause and start with a plan
 // //Everything to load and display selected races
 // function displayRaceList(races) {
 //     const raceDataBox = document.querySelector('#race-list');
