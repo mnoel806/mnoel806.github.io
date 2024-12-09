@@ -48,6 +48,19 @@ document.addEventListener("DOMContentLoaded",  () => {
             displayRaceDetails(raceDetails);
         }
     });
+
+    document.querySelector('#close-driver-popup').addEventListener('click', () => {
+        const driverPopup = document.querySelector('#driver-popup');
+        driverPopup.close();
+    });
+    document.querySelector('#close-constructor-popup').addEventListener('click', () => {
+        const constructorPopup = document.querySelector('#constructor-popup');
+        constructorPopup.close();
+    });
+    document.querySelector('#close-circuit-popup').addEventListener('click', () => {
+        const circuitPopup = document.querySelector('#circuit-popup');
+        circuitPopup.close();
+    });
     
 }); // This is the end of the DOM load. Should always be });
 
@@ -83,8 +96,8 @@ async function fetchRaceData(season){
         const raceData = await response.json();
         localStorage.setItem(`races_${season}`, JSON.stringify(raceData));
         return raceData;
-    } catch (error) {
-        console.error(`Failed to fetch data for season ${season}:`, error);
+    } catch (e) {
+        console.error(`Failed to fetch data for season ${season}:`, e);
         return [];
     }
 }
@@ -117,44 +130,74 @@ async function fetchRaceDetails(raceId) {
             qualifying: qualifyingData,
             raceResults: raceResultsData
         };
-    } catch (error) {
-        console.log('Error fetching race details:', error);
+    } catch (e) {
+        console.log('Error fetching race\'s details:', e);
         return null;
     }
 }
 
 function displayRaceDetails(raceDetails) {
-    const qualifyingList = document.querySelector('#qualifying-list');
+    // const qualifyingList = document.querySelector('#qualifying-list');
+    const qualifyingList = document.querySelector('#qualifying-results-table');
     const raceResultsList = document.querySelector('#race-results-table');
-    const raceNameBox = document.querySelector('#selectedRaceName');
+    // const raceNameBox = document.querySelector('#selectedRaceName');
 
     // Clears previous content
     qualifyingList.innerHTML = '';
     raceResultsList.innerHTML = '';
-    raceNameBox.innerHTML = '';
+    // raceNameBox.innerHTML = '';
 
     console.log(raceDetails);
     if (raceDetails) {
+
+        //v1 with Li elements
         // Display Qualifying Results
+        // raceDetails.qualifying.forEach(q => {
+        //     const li = document.createElement('li');
+        //     li.classList.add("driver-name");
+        //     li.value = q.driver.id;
+        //     li.textContent = `${q.position}. ${q.driver.forename} ${q.driver.surname} (${q.constructor.name}) - [Q1: ${q.q1} - Q2: ${q.q2} - Q3: ${q.q3}]`;
+        //     qualifyingList.appendChild(li);
+        // });
+
+        //v2 This time as a table
         raceDetails.qualifying.forEach(q => {
-            const li = document.createElement('li');
-            li.textContent = `${q.position}. ${q.driver.forename} ${q.driver.surname} (${q.constructor.name}) - [Q1: ${q.q1} - Q2: ${q.q2} - Q3: ${q.q3}]`;
-            qualifyingList.appendChild(li);
+            const rowq = document.createElement('tr');
+            //This make it so when click on driver name, open driver modal, and display that driver's details
+            rowq.innerHTML = `
+                <td>${q.position}</td>
+                <td class="driver-name" data-driver-id="${q.driver.id}">${q.driver.forename} ${q.driver.surname}</td>
+                <td>${q.constructor.name}</td>
+                <td>${q.q1}</td>
+                <td>${q.q2}</td>
+                <td>${q.q3}</td>
+            `;
+            qualifyingList.appendChild(rowq);
         });
 
         raceDetails.raceResults.forEach(r => {
-            const row = document.createElement('tr');
+            const rowr = document.createElement('tr');
             //This make it so when click on driver name, open driver modal, and display that driver's details
-            row.innerHTML = `
+            rowr.innerHTML = `
                 <td>${r.position}</td>
-                <td>${r.driver.forename} ${r.driver.surname}</td>
+                <td class="driver-name" data-driver-id="${r.driver.id}">${r.driver.forename} ${r.driver.surname}</td>
                 <td>${r.constructor.name}</td>
                 <td>${r.laps}</td>
                 <td>${r.points}</td>
             `;
-            raceResultsList.appendChild(row);
+            raceResultsList.appendChild(rowr);
         });
 
+        document.querySelectorAll('.driver-name').forEach(driveElement => {
+            driveElement.addEventListener('click', async (e) => {
+                console.log(driveElement);
+                const driveId = e.target.id;
+
+                // Fetch and display driver details
+                const driveData = await fetchDriverDetails(driveId);
+                populateDriverModal(driveData);
+            });
+        });
 
     } else {
         qualifyingList.innerHTML = '<li>No qualifying results available.</li>';
@@ -162,12 +205,101 @@ function displayRaceDetails(raceDetails) {
     }
 }
 
+/////////////////////////////////////////////////////////////////////
 //Making the Modals Work
+    // `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php`
 
-// `https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php
+    //Something to go get the driver's information
+    async function fetchDriverDetails(driveId) {
+        //Check storage for data
+        const storedDriveData = localStorage.getItem(`driver_${driveId}`);
+        if (storedDriveData) {
+            return JSON.parse(storedDriveData);
+        }
+
+        else { //else go get it
+            try {
+                const driveResp = await fetch(`https://www.randyconnolly.com/funwebdev/3rd/api/f1/drivers.php?id=${driveId}`);
+            
+                const driveData = await driveResp.json();
+                localStorage.setItem(`driver_${driveId}`, JSON.stringify(driveData));
+
+                return driveData; // Returns the driver's detailed info
+            } catch (e) {
+                console.error('Error fetching driver\'s details:', e);
+                return null;
+            }
+        }
+    }
+
+    //load the driver data into the modal and display it
+    function populateDriverModal(driveData){
+        const driverTable = document.querySelector('#driver-details-table');
+        driverTable.innerHTML = ''; //Empties it all
+        console.log(driveData);
+
+        if (driveData) {
+            driveData.forEach( d  => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${d.forename} ${d.surname}</td>
+                    <td>${d.dob}</td>
+                    <td>${d.code}</td>
+                    <td>${d.nationality}</td>
+                    <td>${d.url}</td>
+                `;
+            //     row.innerHTML = `
+            //         <td>${key}</td>
+            //         <td>${value}</td>
+            // `;
+                driverTable.appendChild(row);
+            });
+            // Show the modal
+            const driverPopup = document.querySelector('#driver-popup');
+            driverPopup.showModal();
+        }
+    }
 
 
+    //Something to go get the constructor's information
+    async function fetchConstructorDetails(constructorId) {
+        try {
+            const constructorResp = await fetch(`https://www.randyconnolly.com/funwebdev/3rd/api/f1/constructors.php?id=${constructorId}`);
+        
+            const constructorData = await constructorResp.json();
+            return constructorData; // Returns the constructor's detailed info
+        } catch (e) {
+            console.error('Error fetching constructor\'s details:', e);
+            return null;
+        }
+    }
 
+    function populateConstructorModal(constructorData){
+        const constructorTable = document.querySelector('#constructor-details-table');
+        constructorTable.innerHTML = ''; //Empties it all
+        console.log(constructorData);
+    }
+
+    //Something to go get the circuit's information
+    async function fetchCircuitDetails(circuitId) {
+        try {
+            const circuitResp = await fetch(`https://www.randyconnolly.com/funwebdev/3rd/api/f1/constructors.php?id=${circuitId}`);
+        
+            const circuitData = await circuitResp.json();
+            return circuitData; // Returns the circuit's detailed info
+        } catch (e) {
+            console.error('Error fetching circuit\'s details:', e);
+            return null;
+        }
+    }   
+    function populateCircuitModal(circuitData){
+        const circuitTable = document.querySelector('#circuit-details-table');
+        circuitTable.innerHTML = ''; //Empties it all
+        console.log(circuitData);
+    }
+
+
+/////////////////////////////////////////////////////////////
 
 
 // All the other attempts and code and what not,
@@ -219,3 +351,28 @@ function displayRaceDetails(raceDetails) {
 //     `;
 // }
 
+// A Promise.all Version
+// function getSeasonData(season){
+//     let prom1 = fetch(urlRaces+season).then(resp=>resp.json())
+//     let prom2 = fetch(urlResults+season).then(resp=>resp.json())
+//     let prom3 = fetch(urlQualify+season).then(resp=>resp.json())
+//     return Promise.all(prom1, prom2, prom3);
+// }
+// let resultsData;
+// let qualifyingData;
+// let raceData3 = localStorage.getItem("races");
+// if(!raceData3){
+//     getSeasonData().then(data =>{
+//         displayRaces(data[0]);
+//         resultsData = data[1];
+//         qualifyingData = data[2];
+//         //save in localStorage
+//         localStorage.setItem("races",JSON.stringify(data[0]));
+//         localStorage.setItem("results", JSON.stringify(data[1]));
+//         localStorage.setItem("qualifying",JSON.stringify(data[2]));
+//     })
+// } else {
+//     resultsData = JSON.parse(localStorage("results"));
+//     qualifyingData = JSON.parse(localStorage("qualifying"));
+//     displayRaces(JSON.parse(data));
+// }
