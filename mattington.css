@@ -1,4 +1,6 @@
-
+body {
+    background-color: #D1D1D1;
+}
 /* hide stuff after it works right */
 .view {
     display: none; /* views start hidden  */
